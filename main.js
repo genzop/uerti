@@ -200,7 +200,7 @@ socket.on('connect', function(data) {
   getLocalStream(true, function(stream) {
     localStream = stream;
     container.setState({selfViewSrc: stream.toURL()});
-    container.setState({status: 'ready', info: 'Please enter or create room ID'});
+    container.setState({status: 'ready', info: 'Enter or create room ID'});
   });
 });
 
@@ -329,10 +329,12 @@ const uerti = React.createClass({
                   style={styles.textInput}
                   onChangeText={(text) => this.setState({roomID: text})}
                   value={this.state.roomID}
+                  placeholder='#roomID'
+                  placeholderTextColor='#D8D8D8'
                 />
                 <TouchableHighlight
                   onPress={this._press}>
-                  <Text style={{marginBottom: 30, color: "#FFFFFF",}}>
+                  <Text style={styles.enterRoom}>
                     Enter room
                   </Text>
                 </TouchableHighlight>
@@ -366,13 +368,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
-    color: "#FFFFFF",
+    color: '#FFFFFF',
   },
   title: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
-    color: "#FFFFFF",
+    color: '#FFFFFF',
   },
   textInput: {
     width: 200,
@@ -380,7 +382,6 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     textAlign: 'center',
-    color: "#FFFFFF",
   },
   myCamera: {
     width: 170,
@@ -418,6 +419,13 @@ const styles = StyleSheet.create({
   centered: {
     alignItems: 'center',
   },
+  enterRoom: {
+    marginTop: 10,
+    marginBottom: 30,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 18,
+  }
 });
 
 AppRegistry.registerComponent('uerti', () => uerti);
