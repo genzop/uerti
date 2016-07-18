@@ -108,7 +108,7 @@ function createPC(socketId, isOffer) {
 
   pc.onaddstream = function (event) {
     console.log('onaddstream', event.stream);
-    container.setState({info: 'One peer join!'});
+    container.setState({info: 'One user joined'});
 
     const remoteList = container.state.remoteList;
     remoteList[socketId] = event.stream.toURL();
@@ -185,7 +185,7 @@ function leave(socketId) {
   const remoteList = container.state.remoteList;
   delete remoteList[socketId]
   container.setState({ remoteList: remoteList });
-  container.setState({info: 'One peer leave!'});
+  container.setState({info: 'The other user left'});
 }
 
 socket.on('exchange', function(data){
@@ -311,72 +311,112 @@ const uerti = React.createClass({
   },
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          {this.state.info}
+      <Image source={require('./img/background.jpg')}  style={styles.container}>
+        <Text style={styles.name}>
+          uerti
         </Text>
-        {this.state.textRoomConnected && this._renderTextRoom()}
-        <View style={{flexDirection: 'row'}}>
-          <Text>
-            {this.state.isFront ? "Use front camera" : "Use back camera"}
+        <View style={styles.nameAndEnterRoom}>
+          <Text style={styles.title}>
+            {this.state.info}
           </Text>
-          <TouchableHighlight
-            style={{borderWidth: 1, borderColor: 'black'}}
-            onPress={this._switchVideoType}>
-            <Text>Switch camera</Text>
-          </TouchableHighlight>
-        </View>
-        { this.state.status == 'ready' ?
-          (<View>
-            <TextInput
-              ref='roomID'
-              autoCorrect={false}
-              style={{width: 200, height: 40, borderColor: 'gray', borderWidth: 1}}
-              onChangeText={(text) => this.setState({roomID: text})}
-              value={this.state.roomID}
-            />
-            <TouchableHighlight
-              onPress={this._press}>
-              <Text>Enter room</Text>
-            </TouchableHighlight>
+          {this.state.textRoomConnected && this._renderTextRoom()}
+          {this.state.status == 'ready' ?
+            (<View>
+              <View style={{alignItems: 'center'}}>
+                <TextInput
+                  ref='roomID'
+                  autoCorrect={false}
+                  style={styles.textInput}
+                  onChangeText={(text) => this.setState({roomID: text})}
+                  value={this.state.roomID}
+                />
+                <TouchableHighlight
+                  onPress={this._press}>
+                  <Text style={{marginBottom: 30, color: "#FFFFFF",}}>
+                    Enter room
+                  </Text>
+                </TouchableHighlight>
+              </View>
           </View>) : null
         }
-        <RTCView streamURL={this.state.selfViewSrc} style={styles.selfView}/>
-        {
-          mapHash(this.state.remoteList, function(remote, index) {
-            return <RTCView key={index} streamURL={remote} style={styles.remoteView}/>
-          })
-        }
-        <Image
-          style={{width: 300, height: 300}}
-          source={require('./img/pumped_kid.gif')}
-        />
-      </View>
+        </View>
+        <View style={styles.cameras}>
+          {
+            mapHash(this.state.remoteList, function(remote, index) {
+              return <RTCView key={index} streamURL={remote} style={styles.otherCamera}/>
+            })
+          }
+          <RTCView streamURL={this.state.selfViewSrc} style={styles.myCamera}/>
+        </View>
+      </Image>
     );
   }
 });
 
 const styles = StyleSheet.create({
-  selfView: {
-    width: 200,
-    height: 150,
-  },
-  remoteView: {
-    width: 200,
-    height: 150,
-  },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#F5FCFF',
+    justifyContent: "center",
+    alignItems: "center",
+    width: null,
+    height: null,
   },
-  welcome: {
+  name: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    color: "#FFFFFF",
+  },
+  title: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
+    color: "#FFFFFF",
+  },
+  textInput: {
+    width: 200,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    textAlign: 'center',
+    color: "#FFFFFF",
+  },
+  myCamera: {
+    width: 170,
+    height: 120,
+    marginBottom: 10,
+    marginTop: 20,
+  },
+  otherCamera: {
+    width: 300,
+    height: 250,
+  },
+  switchCamera: {
+    borderWidth: 1,
+    borderColor: 'black',
+    height: 20,
+    width: 120,
+  },
+  switchCameraText:{
+    textAlign: 'center',
+  },
+  nameAndEnterRoom: {
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  cameras: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 5,
   },
   listViewContainer: {
     height: 150,
+  },
+  centered: {
+    alignItems: 'center',
   },
 });
 
