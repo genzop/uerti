@@ -200,7 +200,7 @@ socket.on('connect', function(data) {
   getLocalStream(true, function(stream) {
     localStream = stream;
     container.setState({selfViewSrc: stream.toURL()});
-    container.setState({status: 'ready', info: 'Enter or create room ID'});
+    container.setState({status: 'ready', info: 'Choose a room ID'});
   });
 });
 
@@ -234,7 +234,7 @@ const uerti = React.createClass({
   getInitialState: function() {
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => true});
     return {
-      info: 'Initializing',
+      info: 'Loading',
       status: 'init',
       roomID: '',
       isFront: true,
@@ -250,7 +250,7 @@ const uerti = React.createClass({
   },
   _press(event) {
     this.refs.roomID.blur();
-    this.setState({status: 'connect', info: 'Connecting'});
+    this.setState({status: 'connect', info: 'Waiting for another user...'});
     join(this.state.roomID);
   },
   _switchVideoType() {
@@ -290,7 +290,12 @@ const uerti = React.createClass({
     }
     this.setState({textRoomData, textRoomValue: ''});
   },
-  _renderTextRoom() {
+  _showRoomID(){
+    return (
+        <Text style={{color: '#FFFFFF'}}>{this.state.roomID}</Text>
+    );
+  },
+  _renderTextRoom(){
     return (
       <View style={styles.listViewContainer}>
         <ListView
@@ -312,9 +317,7 @@ const uerti = React.createClass({
   render() {
     return (
       <Image source={require('./img/background.jpg')}  style={styles.container}>
-        <Text style={styles.name}>
-          uerti
-        </Text>
+        <Image source={require('./img/logoWhite.png')}  style={styles.logo}/>
         <View style={styles.nameAndEnterRoom}>
           <Text style={styles.title}>
             {this.state.info}
@@ -330,7 +333,7 @@ const uerti = React.createClass({
                   onChangeText={(text) => this.setState({roomID: text})}
                   value={this.state.roomID}
                   placeholder='#roomID'
-                  placeholderTextColor='#D8D8D8'
+                  placeholderTextColor='#6E6E6E'
                 />
                 <TouchableHighlight
                   onPress={this._press}>
@@ -339,8 +342,8 @@ const uerti = React.createClass({
                   </Text>
                 </TouchableHighlight>
               </View>
-          </View>) : null
-        }
+            </View>) : null
+          }
         </View>
         <View style={styles.cameras}>
           {
@@ -349,6 +352,9 @@ const uerti = React.createClass({
             })
           }
           <RTCView streamURL={this.state.selfViewSrc} style={styles.myCamera}/>
+        {this.state.status == 'connect' ?
+          (<Text style={styles.enterRoom}>Hola</Text>) : null
+        }
         </View>
       </Image>
     );
@@ -358,17 +364,17 @@ const uerti = React.createClass({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     width: null,
     height: null,
   },
-  name: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    textAlign: 'center',
+  logo: {
+    width: 115,
+    height: 70,
+    justifyContent: 'center',
+    resizeMode: 'stretch',
     marginBottom: 20,
-    color: '#FFFFFF',
   },
   title: {
     fontSize: 20,
@@ -382,12 +388,13 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     textAlign: 'center',
+    color: '#FFFFFF',
   },
   myCamera: {
     width: 170,
     height: 120,
     marginBottom: 10,
-    marginTop: 20,
+    marginTop: 30,
   },
   otherCamera: {
     width: 300,
