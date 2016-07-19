@@ -316,7 +316,7 @@ const uerti = React.createClass({
   },
   render() {
     return (
-      <Image source={require('./img/background.jpg')}  style={styles.container}>
+      <Image source={require('./img/background2.jpg')}  style={styles.container}>
         <Image source={require('./img/logoWhite.png')}  style={styles.logo}/>
         <View style={styles.nameAndEnterRoom}>
           {this.state.info != '' ?
