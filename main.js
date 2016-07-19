@@ -108,7 +108,7 @@ function createPC(socketId, isOffer) {
 
   pc.onaddstream = function (event) {
     console.log('onaddstream', event.stream);
-    container.setState({info: 'One user joined'});
+    container.setState({info: ''});
 
     const remoteList = container.state.remoteList;
     remoteList[socketId] = event.stream.toURL();
@@ -234,7 +234,7 @@ const uerti = React.createClass({
   getInitialState: function() {
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => true});
     return {
-      info: 'Loading',
+      info: '',
       status: 'init',
       roomID: '',
       isFront: true,
@@ -319,9 +319,11 @@ const uerti = React.createClass({
       <Image source={require('./img/background.jpg')}  style={styles.container}>
         <Image source={require('./img/logoWhite.png')}  style={styles.logo}/>
         <View style={styles.nameAndEnterRoom}>
-          <Text style={styles.title}>
-            {this.state.info}
-          </Text>
+          {this.state.info != '' ?
+            (<Text style={styles.status}>
+              {this.state.info}
+            </Text>) : null
+          }
           {this.state.textRoomConnected && this._renderTextRoom()}
           {this.state.status == 'ready' ?
             (<View>
@@ -335,9 +337,13 @@ const uerti = React.createClass({
                   placeholder='#roomID'
                   placeholderTextColor='#6E6E6E'
                 />
+
+                <RTCView streamURL={this.state.selfViewSrc} style={styles.myCamera}/>
+
                 <TouchableHighlight
+                  style={styles.button}
                   onPress={this._press}>
-                  <Text style={styles.enterRoom}>
+                  <Text style={styles.buttonText}>
                     Enter room
                   </Text>
                 </TouchableHighlight>
@@ -351,9 +357,17 @@ const uerti = React.createClass({
               return <RTCView key={index} streamURL={remote} style={styles.otherCamera}/>
             })
           }
-          <RTCView streamURL={this.state.selfViewSrc} style={styles.myCamera}/>
         {this.state.status == 'connect' ?
-          (<Text style={styles.enterRoom}>Hola</Text>) : null
+          (<View style={{alignItems: 'center'}}>
+            <RTCView streamURL={this.state.selfViewSrc} style={styles.myCamera}/>
+            <TouchableHighlight
+	           style={styles.button}
+             onPress={this._switchVideoType}>
+             <Text style={styles.buttonText}>
+        	     Leave room
+             </Text>
+            </TouchableHighlight>
+          </View>) : null
         }
         </View>
       </Image>
@@ -370,17 +384,18 @@ const styles = StyleSheet.create({
     height: null,
   },
   logo: {
-    width: 115,
-    height: 70,
+    width: 125,
+    height: 80,
     justifyContent: 'center',
     resizeMode: 'stretch',
     marginBottom: 20,
+    marginTop: 0,
   },
-  title: {
-    fontSize: 20,
+  status: {
+    fontSize: 21,
     textAlign: 'center',
-    margin: 10,
     color: '#FFFFFF',
+    marginTop: 40,
   },
   textInput: {
     width: 200,
@@ -389,25 +404,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     textAlign: 'center',
     color: '#FFFFFF',
+    fontSize: 17,
+    marginTop: 10,
+    marginBottom: 10,
   },
   myCamera: {
     width: 170,
     height: 120,
-    marginBottom: 10,
-    marginTop: 30,
+    marginTop: 20,
   },
   otherCamera: {
     width: 300,
     height: 250,
   },
-  switchCamera: {
+  button: {
     borderWidth: 1,
-    borderColor: 'black',
-    height: 20,
+    borderColor: '#FFFFFF',
+    height: 40,
     width: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
   },
-  switchCameraText:{
-    textAlign: 'center',
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: 'bold',
   },
   nameAndEnterRoom: {
     flexDirection: 'column',
@@ -419,6 +441,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginHorizontal: 5,
+    marginBottom: 50,
   },
   listViewContainer: {
     height: 150,
@@ -426,13 +449,6 @@ const styles = StyleSheet.create({
   centered: {
     alignItems: 'center',
   },
-  enterRoom: {
-    marginTop: 10,
-    marginBottom: 30,
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 18,
-  }
 });
 
 AppRegistry.registerComponent('uerti', () => uerti);
