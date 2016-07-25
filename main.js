@@ -296,11 +296,6 @@ const uerti = React.createClass({
     }
     this.setState({textRoomData, textRoomValue: ''});
   },
-  _showRoomID(){
-    return (
-        <Text style={{color: '#FFFFFF'}}>{this.state.roomID}</Text>
-    );
-  },
   _renderTextRoom(){
     return (
       <View style={styles.listViewContainer}>
@@ -321,6 +316,10 @@ const uerti = React.createClass({
     );
   },
   _restartApp(){
+    if(this.state.status != 'ready'){
+      socket.disconnect();
+      BackAndroid.exitApp();
+    }
   },
   render() {
     return (
@@ -375,7 +374,7 @@ const uerti = React.createClass({
             <RTCView streamURL={this.state.selfViewSrc} style={styles.myCameraOnCall}/>
             <TouchableHighlight
 	           style={styles.button}
-             onPress={this._restartApp()}>
+             onPress={this._restartApp}>
              <Image source={require('./img/buttonLeave.png')}  style={styles.buttonImage}/>
             </TouchableHighlight>
           </View>) : null
@@ -430,8 +429,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   otherCameraOnCall: {
-    width: 300,
-    height: 250,
+    width: 335,
+    height: 330,
   },
   button: {
     height: 60,
@@ -451,10 +450,9 @@ const styles = StyleSheet.create({
   },
   cameras: {
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 5,
-    marginBottom: 50,
+    marginBottom: 20,
   },
   listViewContainer: {
     height: 150,
