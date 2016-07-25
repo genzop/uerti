@@ -10,7 +10,10 @@ import {
   View,
   TextInput,
   ListView,
+  BackAndroid,
 } from 'react-native';
+
+import RNRestart from 'react-native-restart'
 
 import io from 'socket.io-client/socket.io';
 
@@ -230,6 +233,8 @@ function getStats() {
 
 let container;
 
+let backgroundImage = require('./img/backgroundLogin.jpg');
+
 const uerti = React.createClass({
   getInitialState: function() {
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => true});
@@ -252,6 +257,7 @@ const uerti = React.createClass({
     this.refs.roomID.blur();
     this.setState({status: 'connect', info: 'Waiting for another user...'});
     join(this.state.roomID);
+    backgroundImage = require('./img/backgroundOnCall.jpg');
   },
   _switchVideoType() {
     const isFront = !this.state.isFront;
@@ -314,20 +320,25 @@ const uerti = React.createClass({
       </View>
     );
   },
+  _restartApp(){
+  },
   render() {
     return (
-      <Image source={require('./img/background2.jpg')}  style={styles.container}>
-        <Image source={require('./img/logoWhite.png')}  style={styles.logo}/>
+      <Image source={backgroundImage}  style={styles.container}>
         <View style={styles.nameAndEnterRoom}>
-          {this.state.info != '' ?
-            (<Text style={styles.status}>
-              {this.state.info}
-            </Text>) : null
+          {this.state.status == 'init' ?
+            <Image source={require('./img/logo.png')}  style={styles.logo}/> : null
           }
           {this.state.textRoomConnected && this._renderTextRoom()}
           {this.state.status == 'ready' ?
             (<View>
               <View style={{alignItems: 'center'}}>
+                <Image source={require('./img/logo.png')}  style={styles.logo}/>
+                {this.state.info != '' ?
+                  (<Text style={styles.status}>
+                    {this.state.info}
+                   </Text>) : null
+                }
                 <TextInput
                   ref='roomID'
                   autoCorrect={false}
@@ -335,37 +346,37 @@ const uerti = React.createClass({
                   onChangeText={(text) => this.setState({roomID: text})}
                   value={this.state.roomID}
                   placeholder='#roomID'
-                  placeholderTextColor='#6E6E6E'
+                  placeholderTextColor='#BDBDBD'
                 />
-
-                <RTCView streamURL={this.state.selfViewSrc} style={styles.myCamera}/>
-
+                <RTCView streamURL={this.state.selfViewSrc} style={styles.myCameraLogin}/>
                 <TouchableHighlight
                   style={styles.button}
                   onPress={this._press}>
-                  <Text style={styles.buttonText}>
-                    Enter room
-                  </Text>
+                  <Image source={require('./img/buttonEnter.png')}  style={styles.buttonImage}/>
                 </TouchableHighlight>
               </View>
             </View>) : null
           }
         </View>
+
         <View style={styles.cameras}>
           {
             mapHash(this.state.remoteList, function(remote, index) {
-              return <RTCView key={index} streamURL={remote} style={styles.otherCamera}/>
+              return <RTCView key={index} streamURL={remote} style={styles.otherCameraOnCall}/>
             })
           }
         {this.state.status == 'connect' ?
           (<View style={{alignItems: 'center'}}>
-            <RTCView streamURL={this.state.selfViewSrc} style={styles.myCamera}/>
+            {this.state.info != '' ?
+              (<Text style={styles.status}>
+                {this.state.info}
+               </Text>) : null
+            }
+            <RTCView streamURL={this.state.selfViewSrc} style={styles.myCameraOnCall}/>
             <TouchableHighlight
 	           style={styles.button}
-             onPress={this._switchVideoType}>
-             <Text style={styles.buttonText}>
-        	     Leave room
-             </Text>
+             onPress={this._restartApp()}>
+             <Image source={require('./img/buttonLeave.png')}  style={styles.buttonImage}/>
             </TouchableHighlight>
           </View>) : null
         }
@@ -389,7 +400,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     resizeMode: 'stretch',
     marginBottom: 20,
-    marginTop: 0,
+    marginTop: 30,
   },
   status: {
     fontSize: 21,
@@ -408,28 +419,30 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-  myCamera: {
+  myCameraLogin: {
     width: 170,
     height: 120,
     marginTop: 20,
   },
-  otherCamera: {
+  myCameraOnCall: {
+    width: 170,
+    height: 120,
+    marginTop: 20,
+  },
+  otherCameraOnCall: {
     width: 300,
     height: 250,
   },
   button: {
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-    height: 40,
-    width: 120,
+    height: 60,
+    width: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 30,
   },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: 'bold',
+  buttonImage: {
+    height: 60,
+    width: 60,
   },
   nameAndEnterRoom: {
     flexDirection: 'column',

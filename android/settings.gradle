@@ -1,5 +1,6 @@
 rootProject.name = 'uerti'
 
 include ':app'
-include ':WebRTCModule', ':app'
+include ':WebRTCModule', ':react-native-restart', ':app'
 project(':WebRTCModule').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-webrtc/android')
+project(':react-native-restart').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-restart/android')
